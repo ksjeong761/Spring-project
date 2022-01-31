@@ -1,13 +1,13 @@
 #!/usr/bin/python
 import psutil
-import time
 import json
 from collections import OrderedDict
+import sys
+import time
 
 #[TODO]
 #고정값은 프로그램 실행할 때 얻어오고 주기적으로 보낼 때는 제외하기
 #예외 처리(센서 등 github 참고)
-#유니코드 처리 (네트워크, 서비스)
 
 class DeviceStatus:
     def __init__(self):
@@ -30,7 +30,7 @@ class DeviceStatus:
             self.cpu_percent = psutil.cpu_percent(interval=None, percpu=False)
             self.cpu_times_percent = psutil.cpu_times_percent(interval=None, percpu=False)
             self.cpu_count = psutil.cpu_count(logical=True) #고정값
-            self.cpu_freq = psutil.cpu_freq(percpu=False)
+            #self.cpu_freq = psutil.cpu_freq(percpu=False) #리눅스에서 에러남
             return
 
     class Memory:
@@ -41,7 +41,7 @@ class DeviceStatus:
 
     class Disk:
         def __init__(self):
-            self.partitions = [p for p in psutil.disk_partitions(all=False)] #고정값
+            self.partitions = [x for x in psutil.disk_partitions(all=False)] #고정값
             self.disk_usage = psutil.disk_usage('/')
             self.disk_io_counters = psutil.disk_io_counters(perdisk=False, nowrap=True)
             return
@@ -49,9 +49,9 @@ class DeviceStatus:
     class Network:
         def __init__(self):
             self.net_io_counters = psutil.net_io_counters(pernic=False, nowrap=True)
-            self.net_connections = psutil.net_connections(kind='inet')
+            #self.net_connections = psutil.net_connections(kind='inet')
             self.net_if_addrs = psutil.net_if_addrs() #고정값 네트워크 정보는 고정되어 있는 경우가 대부분이지만 바뀔 수도 있음
-            self.net_if_stats = psutil.net_if_stats() #유니코드 문자 처리 해야됨
+            self.net_if_stats = psutil.net_if_stats()
             return
 
     class Sensor:
@@ -73,34 +73,29 @@ class DeviceStatus:
 
     class Process:
         def __init__(self):
-            self.processes = [p for p in psutil.process_iter()]
+            self.processes = [dict(x.info) for x in psutil.process_iter(['pid', 'name', 'username'])]
             return
     
     class WinService:
         def __init__(self):
-            self.services = [p for p in psutil.win_service_iter()] #유니코드 문자 처리 해야됨
+            #self.services = [x for x in psutil.win_service_iter()] #리눅스에서 에러남
             return
 
-def namedtuple_asdict(obj):
-    print(obj)
-    if hasattr(obj, "_asdict"): # detect namedtuple
-        return OrderedDict(zip(obj._fields, (namedtuple_asdict(item) for item in obj)))
-    elif isinstance(obj, str): # iterables - strings
-        return obj
-    elif hasattr(obj, "keys"): # iterables - mapping
-        return OrderedDict(zip(obj.keys(), (namedtuple_asdict(item) for item in obj.values())))
-    elif hasattr(obj, "__iter__"): # iterables - sequence
-        return type(obj)((namedtuple_asdict(item) for item in obj))
-    else: # non-iterable cannot contain namedtuples
-        return obj.__dict__
+    def toJSON(self):
+        return json.dumps(self, default=lambda x: self.namedtuple_asdict(x.__dict__), ensure_ascii=False, indent=4)
 
-d = DeviceStatus()
-print(json.dumps(d.cpu, default=lambda x: namedtuple_asdict(x), indent=4))
-#print(json.dumps(d.memory, default=lambda x: namedtuple_asdict(x.__dict__), indent=4))
-#print(json.dumps(d.disk, default=lambda x: namedtuple_asdict(x.__dict__), indent=4))
-#print(json.dumps(d.network, default=lambda x: namedtuple_asdict(x.__dict__), indent=4))
-#print(json.dumps(d.sensor, default=lambda x: namedtuple_asdict(x.__dict__), indent=4))
-#print(json.dumps(d.timeSpent, default=lambda x: namedtuple_asdict(x.__dict__), indent=4))
-#print(json.dumps(d.user, default=lambda x: namedtuple_asdict(x.__dict__), indent=4))
-#print(json.dumps(d.process, default=lambda x: namedtuple_asdict(x.__dict__), indent=4))
-#print(json.dumps(d.win_service, default=lambda x: namedtuple_asdict(x.__dict__), indent=4))
+    def namedtuple_asdict(self, obj):
+        if hasattr(obj, "_asdict"): # detect namedtuple
+            return OrderedDict(zip(obj._fields, (self.namedtuple_asdict(item) for item in obj)))
+        elif isinstance(obj, str): # iterables - strings
+            return obj
+        elif hasattr(obj, "keys"): # iterables - mapping
+            return OrderedDict(zip(obj.keys(), (self.namedtuple_asdict(item) for item in obj.values())))
+        elif hasattr(obj, "__iter__"): # iterables - sequence
+            return type(obj)((self.namedtuple_asdict(item) for item in obj))
+        else: # non-iterable cannot contain namedtuples
+            return obj
+
+j = DeviceStatus().toJSON()
+print(j)
+print(sys.getsizeof(j))
