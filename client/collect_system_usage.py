@@ -2,9 +2,8 @@
 import device_status as ds
 import requests
 
-j = ds.DeviceStatus().toJSON()
-#print(j)
-
-URL='http://localhost:8080/receiveJSON'
-response = requests.get(URL)
-print(response)
+response = requests.post(url = 'http://localhost:8080/receiveJSON', json=ds.DeviceStatus().to_JSON())
+print(response.url)
+print(response.status_code)
+print(response.headers)
+print(response.text)

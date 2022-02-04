@@ -7,20 +7,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
-public class DeviceStatusController {
-	@GetMapping("/devices/{id}/statuses")
+public class UserController {
+	@GetMapping("/users")
 	public String read() {
 		return "read";
 	}
-	@PostMapping("/devices/{id}/statuses")
+	@PostMapping("/users")
 	public String create() {
 		return "create";
 	}
-	@PutMapping("/devices/{id}/statuses")
+	@PutMapping("/users")
 	public String update() {
 		return "update";
 	}
-	@DeleteMapping("/devices/{id}/statuses")
+	@DeleteMapping("/users")
 	public String delete() {
 		return "delete";
 	}
