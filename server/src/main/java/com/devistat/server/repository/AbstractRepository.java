@@ -1,12 +1,16 @@
 package com.devistat.server.repository;
 
-import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 //https://www.baeldung.com/spring-dao-jpa
+//
+//Repository¡¯s job is
+//to catch persistence-specific exceptions and
+//re-throw them as one of Spring¡¯s unified unchecked exceptions.
+
 public abstract class AbstractRepository< T extends Object > {
 	
 	   private Class< T > clazz;

@@ -10,12 +10,12 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Data
-@Entity
 @NoArgsConstructor
+@Entity
 @Table(name = "users")
 public class User {
 	 @Id
-	 @GeneratedValue(strategy = GenerationType.AUTO)
+	 @GeneratedValue(strategy = GenerationType.IDENTITY)
 	 @Column(name = "user_code")
 	 Integer userCode;
 	 
