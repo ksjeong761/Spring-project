@@ -24,7 +24,7 @@ public class DeviceControllerTest {
 	
 	@Test
 	public void test() throws Exception{
-		Device device = new Device("junit test device NAME");
+		Device device = new Device("junit_test_device_NAME");
 		String uri = "/devices";
 		String content = objectMapper.writeValueAsString(device);
 		System.out.println(content);

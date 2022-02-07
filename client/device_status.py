@@ -9,15 +9,15 @@ from collections import OrderedDict, namedtuple
 
 class DeviceStatus:
     def __init__(self):
-        self.cpu = self.Cpu()
-        self.memory = self.Memory()
-        self.disk = self.Disk()
-        self.network = self.Network()
-        self.sensor = self.Sensor()
+        #self.cpu = self.Cpu()
+        #self.memory = self.Memory()
+        #self.disk = self.Disk()
+        #self.network = self.Network()
+        #self.sensor = self.Sensor()
         self.timeSpent = self.TimeSpent()
-        self.user = self.User()
-        self.process = self.Process()
-        self.win_service = self.WinService()
+        #self.user = self.User()
+        #self.process = self.Process()
+        #self.win_service = self.WinService()
 
     class Cpu:
         def __init__(self):
