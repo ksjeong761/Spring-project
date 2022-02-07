@@ -9,16 +9,16 @@ from collections import OrderedDict, namedtuple
 
 class DeviceStatus:
     def __init__(self):
-        #self.cpu = self.Cpu()
-        #self.memory = self.Memory()
-        #self.disk = self.Disk()
+        self.cpu = self.Cpu()
+        self.memory = self.Memory()
+        self.disk = self.Disk()
         #self.network = self.Network()
-        #self.sensor = self.Sensor()
+        self.sensor = self.Sensor()
         self.timeSpent = self.TimeSpent()
-        #self.user = self.User()
+        self.user = self.User()
         #self.process = self.Process()
         #self.win_service = self.WinService()
-
+    
     class Cpu:
         def __init__(self):
             self.cpu_times = psutil.cpu_times(percpu=False) #계속 누적되는 데이터라서 가공 필요

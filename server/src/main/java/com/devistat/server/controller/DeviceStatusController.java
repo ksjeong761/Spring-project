@@ -35,6 +35,10 @@ public class DeviceStatusController {
 	public String add(HttpEntity<String> httpEntity) throws JsonMappingException, JsonProcessingException {
 		System.out.println("<DeviceStatusController> [add()] 진입 확인");
 		String jsonBody = httpEntity.getBody();
+		jsonBody = jsonBody.replace("\\n", "\n");
+		jsonBody = jsonBody.replace("\\\"", "\"");
+		jsonBody = jsonBody.replace("\"{", "{");
+		jsonBody = jsonBody.replace("}\"", "}");
 		System.out.println("<DeviceStatusController> jsonbody : " + jsonBody);
 	    ObjectMapper mapper = new ObjectMapper();
 	    JsonNode actualObj = mapper.readTree(jsonBody);
