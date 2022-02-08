@@ -11,7 +11,9 @@ while(True):
     print(json)
 
     
-    response = requests.post(url = 'http://localhost:8080/devices/statuses', json=json)
+    response = requests.post(url = 'http://localhost:8080/devices/statuses',
+                            data=json,
+                            headers={"Content-Type": "application/json"})
     print(response.url)
     print(response.status_code)
     print(response.headers)

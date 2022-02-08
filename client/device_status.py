@@ -70,7 +70,7 @@ class DeviceStatus:
             self.services = [x for x in psutil.win_service_iter()] #리눅스에서 에러남
 
     def to_JSON(self):
-        return json.dumps(self, default=lambda x: self.namedtuple_asdict(x.__dict__), ensure_ascii=False, indent=4)
+        return json.dumps(self, default=lambda x: self.namedtuple_asdict(x.__dict__), ensure_ascii=False, indent=None)
 
     def namedtuple_asdict(self, obj):
         if hasattr(obj, "_asdict"): # detect namedtuple
