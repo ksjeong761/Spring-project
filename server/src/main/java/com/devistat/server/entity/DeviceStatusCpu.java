@@ -1,6 +1,8 @@
 package com.devistat.server.entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,24 +20,27 @@ public class DeviceStatusCpu {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer statusCpuCode;
 	
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "deviceStatusCode")
 	private DeviceStatus deviceStatus;
 	
-	private double timePercentUser;
-	private double timePercentSystem;
-	private double timePercentIdle;
+	private Double timePercentUser;
+	private Double timePercentSystem;
+	private Double timePercentIdle;
     
-	private long contextSwitchCount;
-	private long interruptCount;
-	private long systemCallCount;
+	private Long contextSwitchCount;
+	private Long interruptCount;
+	private Long systemCallCount;
     
-    public DeviceStatusCpu(double timePercentUser,
-		    	    double timePercentSystem,
-		    	    double timePercentIdle,
-		    	    long contextSwitchCount,
-		    	    long interruptCount,
-		    	    long systemCallCount) {
+    public DeviceStatusCpu(
+    		DeviceStatus deviceStatus,
+			Double timePercentUser,
+			Double timePercentSystem,
+			Double timePercentIdle,
+    	    long contextSwitchCount,
+    	    long interruptCount,
+    	    long systemCallCount) {
+    	this.deviceStatus = deviceStatus;
     	this.timePercentUser = timePercentUser;
     	this.timePercentSystem = timePercentSystem;
     	this.timePercentIdle = timePercentIdle;

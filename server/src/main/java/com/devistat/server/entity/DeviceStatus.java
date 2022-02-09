@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,33 +28,51 @@ public class DeviceStatus {
     @JoinColumn(name = "deviceCode")
 	private Device device;
 	
-	@OneToOne
+	@OneToOne(mappedBy="deviceStatus", cascade = CascadeType.ALL)
 	@JoinColumn(name = "deviceStatusCpuCode")
 	private DeviceStatusCpu cpu;
-
-	@OneToOne
+	
+	@OneToOne(mappedBy="deviceStatus", cascade = CascadeType.ALL)
 	@JoinColumn(name = "deviceStatusMemoryCode")
 	private DeviceStatusMemory memory;
 	
-	@OneToOne
+	@OneToOne(mappedBy="deviceStatus", cascade = CascadeType.ALL)
 	@JoinColumn(name = "deviceStatusDiskCode")
 	private DeviceStatusDisk disk;
 	
-	@OneToOne
+	@OneToOne(mappedBy="deviceStatus", cascade = CascadeType.ALL)
 	@JoinColumn(name = "deviceStatusNetworkCode")
 	private DeviceStatusNetwork network;
 	
-	public DeviceStatus(LocalDateTime timestamp,
-						Device device,
-						DeviceStatusCpu cpu,
-						DeviceStatusMemory memory,
-						DeviceStatusDisk disk,
-						DeviceStatusNetwork network) {
+	public DeviceStatus(
+			LocalDateTime timestamp,
+			Device device) {
 		this.timestamp = timestamp;
 		this.device = device;
+	}
+	
+	public void deviceStatusSetter(
+			DeviceStatusCpu cpu,
+			DeviceStatusMemory memory,
+			DeviceStatusDisk disk,
+			DeviceStatusNetwork network) {
 		this.cpu = cpu;
 		this.memory = memory;
 		this.disk = disk;
 		this.network = network;
 	}
+
+    @Override
+    public String toString() {
+    	StringBuilder stringBuilder = new StringBuilder();
+    	
+    	stringBuilder.append("timestamp : " + this.timestamp + "\n");
+    	stringBuilder.append("device : " + this.device + "\n");
+    	stringBuilder.append("cpu : " + this.cpu + "\n");
+    	stringBuilder.append("memory : " + this.memory + "\n");
+    	stringBuilder.append("disk : " + this.disk + "\n");
+    	stringBuilder.append("network : " + this.network + "\n");
+    	
+    	return stringBuilder.toString();
+    }
 }

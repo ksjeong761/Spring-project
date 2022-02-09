@@ -31,12 +31,14 @@ public class DeviceStatusDisk {
 	private long writeTime;
 	
     public DeviceStatusDisk(
+    		DeviceStatus deviceStatus,
     		long readCount,
     		long readBytes,
     		long readTime,
     		long writeCount,
     		long writeBytes,
     		long writeTime) {
+    	this.deviceStatus = deviceStatus;
     	this.readCount = readCount;
     	this.readBytes = readBytes;
     	this.readTime = readTime;

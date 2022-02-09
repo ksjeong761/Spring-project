@@ -25,8 +25,11 @@ public class DeviceStatusMemory {
 	private long capacityTotal;
 	private long capacityAvailable;
     
-    public DeviceStatusMemory(long capacityTotal,
-    				long capacityAvailable) {
+    public DeviceStatusMemory(
+    		DeviceStatus deviceStatus,
+			long capacityTotal,
+			long capacityAvailable) {
+    	this.deviceStatus = deviceStatus;
     	this.capacityTotal = capacityTotal;
     	this.capacityAvailable = capacityAvailable;
     }

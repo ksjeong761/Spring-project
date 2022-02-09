@@ -34,14 +34,17 @@ public class DeviceStatusNetwork {
 	private long dropInCount;
 	private long dropOutCount;
 
-    public DeviceStatusNetwork(long sentBytes,
-						long sentPacketCount,
-						long receivedBytes,
-						long receivedPacketCount,
-						long errorInCount,
-						long erorrOutCount,
-						long dropInCount,
-						long dropOutCount) {
+    public DeviceStatusNetwork(
+    		DeviceStatus deviceStatus,
+			long sentBytes,
+			long sentPacketCount,
+			long receivedBytes,
+			long receivedPacketCount,
+			long errorInCount,
+			long erorrOutCount,
+			long dropInCount,
+			long dropOutCount) {
+    	this.deviceStatus = deviceStatus;
     	this.sentBytes = sentBytes;
     	this.sentPacketCount = sentPacketCount;
     	this.receivedBytes = receivedBytes;
