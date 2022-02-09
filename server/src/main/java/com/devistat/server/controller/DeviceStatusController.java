@@ -2,20 +2,30 @@ package com.devistat.server.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.devistat.server.entity.Device;
 import com.devistat.server.entity.DeviceStatus;
+import com.devistat.server.entity.DeviceStatusCpu;
+import com.devistat.server.entity.DeviceStatusDisk;
+import com.devistat.server.entity.DeviceStatusMemory;
+import com.devistat.server.entity.DeviceStatusNetwork;
 import com.devistat.server.service.DeviceStatusService;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @RestController
@@ -31,64 +41,55 @@ public class DeviceStatusController {
 	}
 
 	@ResponseBody
-	@PostMapping("/devices/statuses")
+	@PostMapping(value="/devices/statuses", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String add(HttpEntity<String> httpEntity) throws JsonMappingException, JsonProcessingException {
-		System.out.println("<DeviceStatusController> [add()] 진입 확인");
-		String jsonBody = httpEntity.getBody();
-		jsonBody = jsonBody.replace("\\n", "\n");
-		jsonBody = jsonBody.replace("\\\"", "\"");
-		jsonBody = jsonBody.replace("\"{", "{");
-		jsonBody = jsonBody.replace("}\"", "}");
-		System.out.println("<DeviceStatusController> jsonbody : " + jsonBody);
-	    ObjectMapper mapper = new ObjectMapper();
-	    JsonNode actualObj = mapper.readTree(jsonBody);
-		System.out.println("<DeviceStatusController> actualObj : " + actualObj);
-	    
-	    var iter = actualObj.fieldNames();
-	    while(iter.hasNext()) {
-	    	String jn = iter.next();
-	    	System.out.println(jn);
-	    }
-	    
-	    // When
-	    JsonNode jsonNode1 = actualObj.at("/timeSpent/boot_time");
-	    System.out.println(jsonNode1);
-//		ObjectMapper mapper = new ObjectMapper();
-//	    JsonNode jsonTree = mapper.readTree(jsonBody);
-//	    
-//	    JsonNode d1 = jsonTree.get("cpu");
-//	    JsonNode d2 = d1.get("cpu_times");
-//	    
-//	    String s1 = d1.toPrettyString();
-//	    String s2 = d2.toPrettyString();
-//	    
-//	    if(s1 != null)
-//	    	System.out.println(s1);
-//	    else
-//	    	System.out.println("s1 is null");
-//	    
-//	    if(s2 != null)
-//	    	System.out.println(s2);
-//	    else
-//	    	System.out.println("s2 is null");
-	    
-	    
-	    String cpu = "";
-	    String memory = "";
-	    String disk = "";
-	    String sensor = "";
-	    String timeSpent = "";
-	    String user = "";
-	    
-	    DeviceStatus deviceStatus = new DeviceStatus(cpu,
-												    memory,
-												    disk,
-												    sensor,
-												    timeSpent,
-												    user);
 		
-		return "";
-		//return service.add(deviceStatus);
+		JsonMapper mapper = JsonMapper.builder().build();
+	    JsonNode actualObj = mapper.readTree(httpEntity.getBody());
+		System.out.println("<DeviceStatusController> actualObj : " + actualObj);
+		
+		LocalDateTime timestamp = LocalDateTime.parse(actualObj.at("/time/timestamp").textValue(),
+													  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+		//System.out.println("<DeviceStatusController> timestamp : " + timestamp);
+		
+		Device device = new Device(1, "addDevice NAME");
+		DeviceStatusCpu cpu = new DeviceStatusCpu(
+				actualObj.at("/cpu/cpu_times/user").doubleValue(),
+				actualObj.at("/cpu/cpu_times/system").doubleValue(),
+				actualObj.at("/cpu/cpu_times/idle").doubleValue(),
+				actualObj.at("/cpu/cpu_stats/ctx_switches").longValue(),
+				actualObj.at("/cpu/cpu_stats/interrupts").longValue(),
+				actualObj.at("/cpu/cpu_stats/syscalls").longValue());
+		//System.out.println("<DeviceStatusController> cpu : " + cpu);
+
+		DeviceStatusMemory memory = new DeviceStatusMemory(
+				actualObj.at("/memory/virtual_memory/total").longValue(),
+				actualObj.at("/memory/virtual_memory/available").longValue());
+		//System.out.println("<DeviceStatusController> memory : " + memory);
+		
+		DeviceStatusDisk disk = new DeviceStatusDisk(
+				actualObj.at("/disk/disk_io_counters/read_count").longValue(),
+				actualObj.at("/disk/disk_io_counters/read_bytes").longValue(),
+				actualObj.at("/disk/disk_io_counters/read_time").longValue(),
+				actualObj.at("/disk/disk_io_counters/write_count").longValue(),
+				actualObj.at("/disk/disk_io_counters/write_bytes").longValue(),
+				actualObj.at("/disk/disk_io_counters/write_time").longValue());
+		System.out.println("<DeviceStatusController> disk : " + disk);
+
+		DeviceStatusNetwork network = new DeviceStatusNetwork(
+				actualObj.at("/network/net_io_counters/bytes_sent").longValue(),
+				actualObj.at("/network/net_io_counters/bytes_recv").longValue(),
+				actualObj.at("/network/net_io_counters/packets_sent").longValue(),
+				actualObj.at("/network/net_io_counters/packets_recv").longValue(),
+				actualObj.at("/network/net_io_counters/errin").longValue(),
+				actualObj.at("/network/net_io_counters/errout").longValue(),
+				actualObj.at("/network/net_io_counters/dropin").longValue(),
+				actualObj.at("/network/net_io_counters/dropout").longValue());
+		System.out.println("<DeviceStatusController> network : " + network);
+				
+	    DeviceStatus deviceStatus = new DeviceStatus(timestamp, device, cpu, memory, disk, network);
+		service.add(deviceStatus);
+	    return "";
 	}
 
 	@ResponseBody

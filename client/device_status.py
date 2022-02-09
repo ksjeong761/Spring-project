@@ -1,6 +1,8 @@
 #!/usr/bin/python
 import psutil
 import json
+import datetime
+from base64 import encode
 from collections import OrderedDict, namedtuple
 
 #[TODO]
@@ -12,12 +14,12 @@ class DeviceStatus:
         self.cpu = self.Cpu()
         self.memory = self.Memory()
         self.disk = self.Disk()
-        #self.network = self.Network()
+        self.network = self.Network()
         self.sensor = self.Sensor()
-        self.timeSpent = self.TimeSpent()
+        self.time = self.Time()
         self.user = self.User()
-        #self.process = self.Process()
-        #self.win_service = self.WinService()
+        self.process = self.Process()
+        self.win_service = self.WinService()
     
     class Cpu:
         def __init__(self):
@@ -53,9 +55,10 @@ class DeviceStatus:
             #self.sensors_fans = psutil.sensors_fans() # 감지 안 됨
             self.sensors_battery = psutil.sensors_battery() #노트북에선 되는데 배터리 없을 경우 테스트 필요
 
-    class TimeSpent:
+    class Time:
         def __init__(self):
-            self.boot_time = psutil.boot_time()
+            self.timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            self.boot_time = datetime.datetime.fromtimestamp(psutil.boot_time()).strftime('%Y-%m-%d %H:%M:%S')
 
     class User:
         def __init__(self):
@@ -68,6 +71,11 @@ class DeviceStatus:
     class WinService:
         def __init__(self):
             self.services = [x for x in psutil.win_service_iter()] #리눅스에서 에러남
+
+    class Authentication:
+        def __init__(self):
+            self.deviceCode = "1";
+            self.userCode = "1";
 
     def to_JSON(self):
         return json.dumps(self, default=lambda x: self.namedtuple_asdict(x.__dict__), ensure_ascii=False, indent=None)

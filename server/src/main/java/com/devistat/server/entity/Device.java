@@ -2,27 +2,35 @@ package com.devistat.server.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import javax.persistence.Column;
+
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.OneToMany;
 
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "devices")
 public class Device {
 	 @Id
 	 @GeneratedValue(strategy = GenerationType.IDENTITY)
-	 @Column(name = "device_code")
-	 Integer deviceCode;
+	 private Integer deviceCode;
 	 
-	 @Column(name = "device_name")
-	 String deviceName;
+	 private String deviceName;
 	 
+	 @OneToMany(mappedBy="device")
+	 private List<DeviceStatus> deviceStatuses;
+
 	 public Device(String deviceName) {
+		 this.deviceName = deviceName;
+	 }
+	 
+	 public Device(Integer deviceCode,
+			 	   String deviceName) {
+		 this.deviceCode = deviceCode;
 		 this.deviceName = deviceName;
 	 }
 }

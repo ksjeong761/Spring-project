@@ -15,4 +15,8 @@ public class ServerApplication extends SpringBootServletInitializer {
 	public static void main(String[] args) {
 		SpringApplication.run(ServerApplication.class, args);
 	}
+	
+	private void initialize() {
+		
+	}
 }

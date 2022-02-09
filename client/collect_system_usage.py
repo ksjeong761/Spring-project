@@ -4,20 +4,36 @@ import requests
 import time
 
 while(True):
-    json=ds.DeviceStatus().to_JSON()
-    f = open("log.log", "w")
-    f.write(json)
-    f.close()
-    print(json)
+    #print(ds.DeviceStatus().to_JSON())
 
-    
-    response = requests.post(url = 'http://localhost:8080/devices/statuses',
-                            data=json,
-                            headers={"Content-Type": "application/json"})
+    response = requests.post(
+        url = 'http://localhost:8080/users'
+    )
+
     print(response.url)
     print(response.status_code)
     print(response.headers)
     print(response.text)
 
-    #time.sleep(5)
+    response = requests.post(
+        url = 'http://localhost:8080/devices'
+    )
+
+    print(response.url)
+    print(response.status_code)
+    print(response.headers)
+    print(response.text)
+
+    response = requests.post(
+        url = 'http://localhost:8080/devices/statuses',
+        headers={'Content-Type':'application/json; charset=utf-8'},
+        data=ds.DeviceStatus().to_JSON().encode('utf-8')
+    )
+
+    print(response.url)
+    print(response.status_code)
+    print(response.headers)
+    print(response.text)
+
+    time.sleep(1)
     break
