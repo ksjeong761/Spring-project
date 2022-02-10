@@ -1,6 +1,7 @@
 package com.devistat.server.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 @Data
+@NoArgsConstructor
 @Entity
 public class DeviceStatus {
 	@Id
@@ -37,8 +39,6 @@ public class DeviceStatus {
 	
 	@OneToOne(mappedBy="deviceStatus", cascade = CascadeType.ALL)
 	private DeviceStatusNetwork network;
-	
-	public DeviceStatus() {}
 	
 	public DeviceStatus(
 			LocalDateTime timestamp,

@@ -24,7 +24,7 @@ public class Device {
 	 
 	 @OneToMany(mappedBy="device", cascade = CascadeType.ALL)
 	 private List<DeviceStatus> deviceStatuses;
-
+	 
 	 public Device(String deviceName) {
 		 this.deviceName = deviceName;
 	 }
@@ -38,8 +38,18 @@ public class Device {
 	 public Device(Integer deviceCode,
 			 	   String deviceName,
 			 	   List<DeviceStatus> deviceStatuses) {
-	 this.deviceCode = deviceCode;
-	 this.deviceName = deviceName;
-	 this.deviceStatuses = deviceStatuses;
-}
+		 this.deviceCode = deviceCode;
+		 this.deviceName = deviceName;
+		 this.deviceStatuses = deviceStatuses;
+	 }
+
+    @Override
+    public String toString() {
+    	StringBuilder stringBuilder = new StringBuilder();
+    	
+    	stringBuilder.append("deviceCode : " + this.deviceCode + "\n");
+    	stringBuilder.append("deviceName : " + this.deviceName + "\n");
+    	
+    	return stringBuilder.toString();
+    }
 }

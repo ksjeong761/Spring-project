@@ -50,13 +50,13 @@ public class DeviceStatusController {
 		
 		JsonMapper mapper = JsonMapper.builder().build();
 	    JsonNode actualObj = mapper.readTree(httpEntity.getBody());
-	    logger.info("<DeviceStatusController> actualObj : " + actualObj);
+	    logger.info("actualObj : " + actualObj);
 		
 		LocalDateTime timestamp = LocalDateTime.parse(actualObj.at("/time/timestamp").textValue(),
 													  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-		logger.info("<DeviceStatusController> timestamp : " + timestamp);
+		logger.info("timestamp : " + timestamp);
 		
-		Device device = new Device(123, "addDevice NAME", new ArrayList<DeviceStatus>());
+		Device device = new Device(1, "addDevice NAME", new ArrayList<DeviceStatus>());
 
 	    DeviceStatus deviceStatus = new DeviceStatus(timestamp, device);
 	    
@@ -68,13 +68,13 @@ public class DeviceStatusController {
 				actualObj.at("/cpu/cpu_stats/ctx_switches").longValue(),
 				actualObj.at("/cpu/cpu_stats/interrupts").longValue(),
 				actualObj.at("/cpu/cpu_stats/syscalls").longValue());
-		logger.info("<DeviceStatusController> cpu : " + cpu);
+		logger.info("cpu : " + cpu);
 
 		DeviceStatusMemory memory = new DeviceStatusMemory(
 				deviceStatus,
 				actualObj.at("/memory/virtual_memory/total").longValue(),
 				actualObj.at("/memory/virtual_memory/available").longValue());
-		logger.info("<DeviceStatusController> memory : " + memory);
+		logger.info("memory : " + memory);
 		
 		DeviceStatusDisk disk = new DeviceStatusDisk(
 				deviceStatus,
@@ -84,7 +84,7 @@ public class DeviceStatusController {
 				actualObj.at("/disk/disk_io_counters/write_count").longValue(),
 				actualObj.at("/disk/disk_io_counters/write_bytes").longValue(),
 				actualObj.at("/disk/disk_io_counters/write_time").longValue());
-		logger.info("<DeviceStatusController> disk : " + disk);
+		logger.info("disk : " + disk);
 
 		DeviceStatusNetwork network = new DeviceStatusNetwork(
 				deviceStatus,
@@ -96,7 +96,7 @@ public class DeviceStatusController {
 				actualObj.at("/network/net_io_counters/errout").longValue(),
 				actualObj.at("/network/net_io_counters/dropin").longValue(),
 				actualObj.at("/network/net_io_counters/dropout").longValue());
-		logger.info("<DeviceStatusController> network : " + network);
+		logger.info("network : " + network);
 		
 		deviceStatus.deviceStatusSetter(cpu, memory, disk, network);
 		service.add(deviceStatus);

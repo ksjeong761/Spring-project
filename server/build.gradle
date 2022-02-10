@@ -36,7 +36,8 @@ dependencies {
 	implementation 'org.javassist:javassist:3.25.0-GA'
 	
 	//Lombok
-	providedRuntime 'org.projectlombok:lombok:1.18.12'
+	compileOnly 'org.projectlombok:lombok:1.18.12'
+	annotationProcessor 'org.projectlombok:lombok:1.18.12'
 	
 }
 

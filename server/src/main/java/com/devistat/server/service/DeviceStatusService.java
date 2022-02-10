@@ -18,7 +18,12 @@ public class DeviceStatusService {
 	private DeviceStatusRepository repository;
 	
 	public String findAll() {
-		repository.findAll();
+		var findResult = repository.findAll();
+		
+		for(var v : findResult) {
+			System.out.println(v);
+		}
+		
 		return "read";
 	}
 	
