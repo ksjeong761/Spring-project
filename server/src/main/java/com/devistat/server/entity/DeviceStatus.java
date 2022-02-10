@@ -1,7 +1,6 @@
 package com.devistat.server.entity;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -15,7 +14,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 @Data
-@NoArgsConstructor
 @Entity
 public class DeviceStatus {
 	@Id
@@ -25,24 +23,22 @@ public class DeviceStatus {
 	private LocalDateTime timestamp;
 	
 	@ManyToOne
-    @JoinColumn(name = "deviceCode")
+	@JoinColumn(name = "deviceCode")
 	private Device device;
 	
 	@OneToOne(mappedBy="deviceStatus", cascade = CascadeType.ALL)
-	@JoinColumn(name = "deviceStatusCpuCode")
 	private DeviceStatusCpu cpu;
 	
 	@OneToOne(mappedBy="deviceStatus", cascade = CascadeType.ALL)
-	@JoinColumn(name = "deviceStatusMemoryCode")
 	private DeviceStatusMemory memory;
 	
 	@OneToOne(mappedBy="deviceStatus", cascade = CascadeType.ALL)
-	@JoinColumn(name = "deviceStatusDiskCode")
 	private DeviceStatusDisk disk;
 	
 	@OneToOne(mappedBy="deviceStatus", cascade = CascadeType.ALL)
-	@JoinColumn(name = "deviceStatusNetworkCode")
 	private DeviceStatusNetwork network;
+	
+	public DeviceStatus() {}
 	
 	public DeviceStatus(
 			LocalDateTime timestamp,

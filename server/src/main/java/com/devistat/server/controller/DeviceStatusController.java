@@ -9,9 +9,7 @@ import com.devistat.server.entity.DeviceStatusDisk;
 import com.devistat.server.entity.DeviceStatusMemory;
 import com.devistat.server.entity.DeviceStatusNetwork;
 import com.devistat.server.service.DeviceStatusService;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -19,7 +17,9 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -32,7 +32,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @RestController
 public class DeviceStatusController {
-	
+
+    private final Logger logger = LoggerFactory.getLogger(DeviceStatusController.class);
+	    
 	@Autowired
 	private DeviceStatusService service;
 
@@ -48,11 +50,11 @@ public class DeviceStatusController {
 		
 		JsonMapper mapper = JsonMapper.builder().build();
 	    JsonNode actualObj = mapper.readTree(httpEntity.getBody());
-		System.out.println("<DeviceStatusController> actualObj : " + actualObj);
+	    logger.info("<DeviceStatusController> actualObj : " + actualObj);
 		
 		LocalDateTime timestamp = LocalDateTime.parse(actualObj.at("/time/timestamp").textValue(),
 													  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-		//System.out.println("<DeviceStatusController> timestamp : " + timestamp);
+		logger.info("<DeviceStatusController> timestamp : " + timestamp);
 		
 		Device device = new Device(123, "addDevice NAME", new ArrayList<DeviceStatus>());
 
@@ -66,13 +68,13 @@ public class DeviceStatusController {
 				actualObj.at("/cpu/cpu_stats/ctx_switches").longValue(),
 				actualObj.at("/cpu/cpu_stats/interrupts").longValue(),
 				actualObj.at("/cpu/cpu_stats/syscalls").longValue());
-		//System.out.println("<DeviceStatusController> cpu : " + cpu);
+		logger.info("<DeviceStatusController> cpu : " + cpu);
 
 		DeviceStatusMemory memory = new DeviceStatusMemory(
 				deviceStatus,
 				actualObj.at("/memory/virtual_memory/total").longValue(),
 				actualObj.at("/memory/virtual_memory/available").longValue());
-		//System.out.println("<DeviceStatusController> memory : " + memory);
+		logger.info("<DeviceStatusController> memory : " + memory);
 		
 		DeviceStatusDisk disk = new DeviceStatusDisk(
 				deviceStatus,
@@ -82,7 +84,7 @@ public class DeviceStatusController {
 				actualObj.at("/disk/disk_io_counters/write_count").longValue(),
 				actualObj.at("/disk/disk_io_counters/write_bytes").longValue(),
 				actualObj.at("/disk/disk_io_counters/write_time").longValue());
-		System.out.println("<DeviceStatusController> disk : " + disk);
+		logger.info("<DeviceStatusController> disk : " + disk);
 
 		DeviceStatusNetwork network = new DeviceStatusNetwork(
 				deviceStatus,
@@ -94,7 +96,7 @@ public class DeviceStatusController {
 				actualObj.at("/network/net_io_counters/errout").longValue(),
 				actualObj.at("/network/net_io_counters/dropin").longValue(),
 				actualObj.at("/network/net_io_counters/dropout").longValue());
-		System.out.println("<DeviceStatusController> network : " + network);
+		logger.info("<DeviceStatusController> network : " + network);
 		
 		deviceStatus.deviceStatusSetter(cpu, memory, disk, network);
 		service.add(deviceStatus);

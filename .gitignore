@@ -1,5 +1,6 @@
-# Created by https://www.toptal.com/developers/gitignore/api/windows,java,python,gradle,eclipse
-# Edit at https://www.toptal.com/developers/gitignore?templates=windows,java,python,gradle,eclipse
+
+# Created by https://www.toptal.com/developers/gitignore/api/windows,java,python,gradle,eclipse,react
+# Edit at https://www.toptal.com/developers/gitignore?templates=windows,java,python,gradle,eclipse,react
 
 ### Eclipse ###
 .metadata
@@ -9,14 +10,10 @@ tmp/
 *.bak
 *.swp
 *~.nib
-application.properties
 local.properties
 .settings/
 .loadpath
 .recommenders
-.project
-.classpath
-
 
 # External tool builders
 .externalToolBuilders/
@@ -250,6 +247,21 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+### react ###
+.DS_*
+logs
+**/*.backup.*
+**/*.back.*
+
+node_modules
+bower_components
+
+*.sublime*
+
+psd
+thumb
+sketch
+
 ### Windows ###
 # Windows thumbnail cache files
 Thumbs.db
@@ -296,4 +308,4 @@ gradle-app.setting
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
-# End of https://www.toptal.com/developers/gitignore/api/windows,java,python,gradle,eclipse
+# End of https://www.toptal.com/developers/gitignore/api/windows,java,python,gradle,eclipse,react

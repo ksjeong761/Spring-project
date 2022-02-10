@@ -20,7 +20,7 @@ public class DeviceStatusCpu {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer statusCpuCode;
 	
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne
 	@JoinColumn(name = "deviceStatusCode")
 	private DeviceStatus deviceStatus;
 	

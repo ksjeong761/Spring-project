@@ -37,6 +37,7 @@ dependencies {
 	
 	//Lombok
 	providedRuntime 'org.projectlombok:lombok:1.18.12'
+	
 }
 
 tasks.named('test') {
