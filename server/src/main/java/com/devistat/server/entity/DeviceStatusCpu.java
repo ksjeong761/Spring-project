@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,10 +20,12 @@ import lombok.NoArgsConstructor;
 public class DeviceStatusCpu {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonIgnore
 	private Integer statusCpuCode;
 	
 	@OneToOne
 	@JoinColumn(name = "deviceStatusCode")
+	@JsonIgnore
 	private DeviceStatus deviceStatus;
 	
 	private Double timePercentUser;

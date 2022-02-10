@@ -12,6 +12,7 @@ import com.devistat.server.service.DeviceStatusService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDateTime;
@@ -40,7 +41,7 @@ public class DeviceStatusController {
 
 	@ResponseBody
 	@GetMapping("/devices/statuses")
-	public String find() {
+	public String find() throws JsonProcessingException {
 		return service.findAll();
 	}
 

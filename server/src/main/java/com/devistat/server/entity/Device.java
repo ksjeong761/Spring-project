@@ -12,6 +12,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Data
 @NoArgsConstructor
 @Entity
@@ -23,6 +25,7 @@ public class Device {
 	 private String deviceName;
 	 
 	 @OneToMany(mappedBy="device", cascade = CascadeType.ALL)
+	 @JsonIgnore
 	 private List<DeviceStatus> deviceStatuses;
 	 
 	 public Device(String deviceName) {
