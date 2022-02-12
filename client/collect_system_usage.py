@@ -4,7 +4,7 @@ import requests
 import time
 
 while(True):
-    #print(ds.DeviceStatus().to_JSON())
+    # print(ds.DeviceStatus().to_JSON())
 
     response = requests.post(
         url = 'http://localhost:8080/users'

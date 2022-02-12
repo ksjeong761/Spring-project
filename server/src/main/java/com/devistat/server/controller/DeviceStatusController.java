@@ -42,7 +42,10 @@ public class DeviceStatusController {
 	@ResponseBody
 	@GetMapping("/devices/statuses")
 	public String find() throws JsonProcessingException {
-		return service.findAll();
+		var data = service.findAll();
+	    logger.info("GET 진입 확인 @@@@");
+	    logger.info("data : " + data);
+		return data;
 	}
 
 	@ResponseBody
