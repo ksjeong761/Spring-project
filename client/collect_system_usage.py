@@ -21,7 +21,7 @@ print(response.status_code)
 print(response.headers)
 print(response.text)
 
-count=500
+count=3
 while(count > 0):
     count -= 1
     print(ds.DeviceStatus().to_JSON())

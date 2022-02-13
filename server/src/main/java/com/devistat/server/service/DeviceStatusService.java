@@ -1,5 +1,6 @@
 package com.devistat.server.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -21,6 +22,11 @@ public class DeviceStatusService {
 	
 	@Autowired
 	private DeviceStatusRepository repository;
+
+	public String findByPeriod(LocalDateTime start, LocalDateTime end) {
+		repository.findByPeriod(start, end);
+		return "read";
+	}
 	
 	public String findAll() throws JsonProcessingException {
 		List<DeviceStatus> findResult = repository.findAll();

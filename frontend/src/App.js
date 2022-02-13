@@ -4,6 +4,8 @@ import axios from 'axios'
 import Chart from 'chart.js/auto'; 
 import {Line, Bar, Radar, Doughnut, PolarArea, Bubble, Pie, Scatter} from 'react-chartjs-2';
 
+const PERCENT = 100;
+
 export default function App() {
   const [chartData, setChartData] = useState({
     data : {
@@ -97,20 +99,24 @@ export default function App() {
     setChartData(newData);
   }, [cpuUsageArray]);
 
-  
-  function getRequest() {
-    axios.get('http://localhost:8080/devices/statuses')
+  //초기값은 타임스탬프 기준 (현재 시각 - 확인하고 싶은 시각) 전부 긁어와야 함
+  function getRequest(minuteAgo=60) {
+    const url = 'http://localhost:8080/devices/statuses';
+    axios.get(url, {
+      params: {
+        minute_ago: minuteAgo
+      }
+    })
       .then((response) => {
         //JSON 가공
         //여러 개 받아온 데이터 길이 구해서 끝에서부터 일정량 잘라 사용할것임
         const length = Object.keys(response.data).length;
-
-        const newArray = [];
+        
         for(let i=length-60; i<length; i++){
-          newArray.push(100-JSON.stringify(response.data[i]['cpu']['timePercentIdle']))
+          cpuUsageArray.push(PERCENT-JSON.stringify(response.data[i]['cpu']['timePercentIdle']))
         }
 
-        setCpuUsageArray([...newArray]);
+        setCpuUsageArray([...cpuUsageArray]);
       }
     );
   }

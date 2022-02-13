@@ -27,7 +27,7 @@ public class DeviceStatus {
 	private Integer deviceStatusCode;
 	
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	private LocalDateTime timestamp;
+	private LocalDateTime loggedTime;
 	
 	@ManyToOne
 	@JoinColumn(name = "deviceCode")
@@ -46,9 +46,9 @@ public class DeviceStatus {
 	private DeviceStatusNetwork network;
 	
 	public DeviceStatus(
-			LocalDateTime timestamp,
+			LocalDateTime loggedTime,
 			Device device) {
-		this.timestamp = timestamp;
+		this.loggedTime = loggedTime;
 		this.device = device;
 	}
 	
@@ -67,7 +67,7 @@ public class DeviceStatus {
     public String toString() {
     	StringBuilder stringBuilder = new StringBuilder();
     	
-    	stringBuilder.append("timestamp : " + this.timestamp + "\n");
+    	stringBuilder.append("loggedTime : " + this.loggedTime + "\n");
     	stringBuilder.append("device : " + this.device + "\n");
     	stringBuilder.append("cpu : " + this.cpu + "\n");
     	stringBuilder.append("memory : " + this.memory + "\n");

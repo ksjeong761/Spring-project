@@ -27,6 +27,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -40,14 +41,25 @@ public class DeviceStatusController {
 	private DeviceStatusService service;
 
 	@ResponseBody
-	@GetMapping("/devices/statuses")
-	public String find() throws JsonProcessingException {
-		var data = service.findAll();
-	    logger.info("GET 진입 확인 @@@@");
-	    logger.info("data : " + data);
+	@GetMapping("/devices/statuses?{minuteAgo}")
+	public String findByPeriod(@PathVariable int minuteAgo) throws JsonProcessingException {
+		logger.info("GET 진입 확인 minuteAgo : " + minuteAgo);
+		String data = service.findByPeriod(LocalDateTime.now().minusMinutes(minuteAgo), LocalDateTime.now());
+	    
+		logger.info("GET data : " + data);
 		return data;
 	}
 
+	@ResponseBody
+	@GetMapping("/devices/statuses")
+	public String findAll() throws JsonProcessingException {
+		logger.info("GET 진입 확인 @@@@");
+		String data = service.findAll();
+	    
+		logger.info("GET data : " + data);
+		return data;
+	}
+	
 	@ResponseBody
 	@PostMapping(value="/devices/statuses", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String add(HttpEntity<String> httpEntity) throws JsonMappingException, JsonProcessingException {
@@ -56,13 +68,13 @@ public class DeviceStatusController {
 	    JsonNode actualObj = mapper.readTree(httpEntity.getBody());
 	    logger.info("actualObj : " + actualObj);
 		
-		LocalDateTime timestamp = LocalDateTime.parse(actualObj.at("/time/timestamp").textValue(),
+		LocalDateTime loggedTime = LocalDateTime.parse(actualObj.at("/time/logged_time").textValue(),
 													  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-		logger.info("timestamp : " + timestamp);
+		logger.info("loggedTime : " + loggedTime);
 		
 		Device device = new Device(1, "addDevice NAME", new ArrayList<DeviceStatus>());
 
-	    DeviceStatus deviceStatus = new DeviceStatus(timestamp, device);
+	    DeviceStatus deviceStatus = new DeviceStatus(loggedTime, device);
 	    
 		DeviceStatusCpu cpu = new DeviceStatusCpu(
 				deviceStatus,

@@ -57,7 +57,7 @@ class DeviceStatus:
 
     class Time:
         def __init__(self):
-            self.timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            self.logged_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             self.boot_time = datetime.datetime.fromtimestamp(psutil.boot_time()).strftime('%Y-%m-%d %H:%M:%S')
 
     class User:
