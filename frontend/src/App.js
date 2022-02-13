@@ -1,15 +1,50 @@
 import './App.css';
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import ReactDOM, { render } from 'react-dom';
+
 import axios from 'axios'
+import Chart from 'chart.js/auto'; 
+import {Line} from 'react-chartjs-2';
 
 export default class App extends React.Component {
-  render(){
-    console.log('App.render()');
-    // return (
-    //   <ClassAPIService/>
-    // );
+  constructor() {
+    super();
+    this.state = {
+      data: {
+        labels: ['시간1', '시간2', '시간3', '시간4', '시간5'],
+        datasets: [
+          {
+            label: '데이터 이름',
+            fill: false,
+            lineTension: 0.3,
+            backgroundColor: 'rgba(75,192,192,1)',
+            borderColor: 'rgba(0,0,0,1)',
+            borderWidth: 2,
+            data: [0, 75, 50, 25, 100]
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          title: {
+            display: true,
+            text: '차트 제목'
+          }
+        }
+      }
+    };
+  }
+
+  render() {
     return (
-      <FunctionAPIService/>
+      <Line 
+        data={this.state.data}
+        options={this.state.options}
+      />
     );
   }
 }
@@ -65,7 +100,7 @@ function FunctionAPIService() {
     <div className='FunctionAPIService'>
       <p>
         function test<br/>
-        {responseJSON}
+        {this.state.responseJSON}
       </p>
     </div>
   );
