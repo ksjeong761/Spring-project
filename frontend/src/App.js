@@ -6,102 +6,74 @@ import axios from 'axios'
 import Chart from 'chart.js/auto'; 
 import {Line} from 'react-chartjs-2';
 
-export default class App extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      data: {
-        labels: ['시간1', '시간2', '시간3', '시간4', '시간5'],
-        datasets: [
-          {
-            label: '데이터 이름',
-            fill: false,
-            lineTension: 0.3,
-            backgroundColor: 'rgba(75,192,192,1)',
-            borderColor: 'rgba(0,0,0,1)',
-            borderWidth: 2,
-            data: [0, 75, 50, 25, 100]
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'top',
-          },
-          title: {
-            display: true,
-            text: '차트 제목'
-          }
-        }
+const initialChartData = {
+  data: {
+    labels: ['시간1', '시간2', '시간3', '시간4', '시간5'],
+    datasets: [
+      {
+        label: 'CPU 사용량(라인명)',
+        fill: false,
+        lineTension: 0.3,
+        backgroundColor: 'rgba(75,192,192,1)',
+        borderColor: 'rgba(0,0,0,1)',
+        borderWidth: 2,
+        data: [0, 75, 50, 25, 100]
       }
-    };
-  }
-
-  render() {
-    return (
-      <Line 
-        data={this.state.data}
-        options={this.state.options}
-      />
-    );
-  }
-}
-
-class ClassAPIService extends React.Component {
-  constructor() {
-    console.log('ClassAPIService.constructor()');
-    super();
-
-    this.state = {
-      responseJSON:'not changed'
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: 'CPU 사용량(차트명)'
+      }
     }
   }
+};
 
-  render(){
-    console.log('AxiosService.render()');
+export default function App() {
+  //state 변수 선언 : chartData
+  //setter : setChartData
+  //값 초기화 : initialChartData
+  const [chartData, setChartData] = useState(initialChartData);
 
-    axios.get('http://localhost:8080/devices/statuses')
-      .then((response) => {
-        console.log('ClassAPIService.getDerivedStateFromProps() response : ' + response.data[0]);
-        console.log('ClassAPIService.getDerivedStateFromProps() response : ' + JSON.stringify(response.data[0]));
-      
-        this.setState({ responseJSON: JSON.stringify(response.data[0]) });
-      }
-    );
-
-    return (
-      <div>
-        <p>
-          class test<br/>
-          {this.state.responseJSON}
-        </p>
-      </div>
-    );
-  }
-}
-
-function FunctionAPIService() {
-  const [responseJSON, setResponseJSON] = useState('default value');
-  
   function getRequest() {
     axios.get('http://localhost:8080/devices/statuses')
       .then((response) => {
-        console.log('FunctionAPIService.responseJSONCallback() response : ' + JSON.stringify(response.data[0]));
-        setResponseJSON(JSON.stringify(response.data[0]));
+        //JSON 가공
+        //여러 개 받아온 데이터 길이 구해서 끝에서부터 일정량 잘라 사용할것임
+        const responseArrayLength = Object.keys(response.data).length;
+        const actuallyShowingLength = 60;
+        const cpuUsageArray = [];
+        const timeArray = [];
+
+        for(let i=responseArrayLength-actuallyShowingLength; i<responseArrayLength; i++){
+          //console.log('App.getRequest() : ' +  JSON.stringify(response.data[i]['cpu']['timePercentIdle']));
+          //console.log('App.getRequest() : ' +  JSON.stringify(response.data[i]['timestamp']));
+          cpuUsageArray.push(100-JSON.stringify(response.data[i]['cpu']['timePercentIdle']))
+          timeArray.push(responseArrayLength-i);
+        }
+
+        const newData = initialChartData;
+        newData.data.labels = timeArray;
+        newData.data.datasets[0].data = cpuUsageArray;
+
+        //chartData에 데이터 넣는게 목표
+        setChartData(newData)
       }
     );
   }
 
   useEffect(getRequest, []);
-
+  
   return (
-    <div className='FunctionAPIService'>
-      <p>
-        function test<br/>
-        {this.state.responseJSON}
-      </p>
-    </div>
+    <Line 
+      data={chartData.data}
+      options={chartData.options}
+    />
   );
 }

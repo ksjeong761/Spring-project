@@ -66,9 +66,9 @@ public class DeviceStatusController {
 	    
 		DeviceStatusCpu cpu = new DeviceStatusCpu(
 				deviceStatus,
-				actualObj.at("/cpu/cpu_times/user").doubleValue(),
-				actualObj.at("/cpu/cpu_times/system").doubleValue(),
-				actualObj.at("/cpu/cpu_times/idle").doubleValue(),
+				actualObj.at("/cpu/cpu_times_percent/user").doubleValue(),
+				actualObj.at("/cpu/cpu_times_percent/system").doubleValue(),
+				actualObj.at("/cpu/cpu_times_percent/idle").doubleValue(),
 				actualObj.at("/cpu/cpu_stats/ctx_switches").longValue(),
 				actualObj.at("/cpu/cpu_stats/interrupts").longValue(),
 				actualObj.at("/cpu/cpu_stats/syscalls").longValue());

@@ -3,26 +3,28 @@ import device_status as ds
 import requests
 import time
 
-while(True):
-    # print(ds.DeviceStatus().to_JSON())
+response = requests.post(
+    url = 'http://localhost:8080/users'
+)
 
-    response = requests.post(
-        url = 'http://localhost:8080/users'
-    )
+print(response.url)
+print(response.status_code)
+print(response.headers)
+print(response.text)
 
-    print(response.url)
-    print(response.status_code)
-    print(response.headers)
-    print(response.text)
+response = requests.post(
+    url = 'http://localhost:8080/devices'
+)
 
-    response = requests.post(
-        url = 'http://localhost:8080/devices'
-    )
+print(response.url)
+print(response.status_code)
+print(response.headers)
+print(response.text)
 
-    print(response.url)
-    print(response.status_code)
-    print(response.headers)
-    print(response.text)
+count=100
+while(count > 0):
+    count -= 1
+    print(ds.DeviceStatus().to_JSON())
 
     response = requests.post(
         url = 'http://localhost:8080/devices/statuses',
@@ -36,4 +38,4 @@ while(True):
     print(response.text)
 
     time.sleep(1)
-    break
+    #break
