@@ -21,7 +21,7 @@ print(response.status_code)
 print(response.headers)
 print(response.text)
 
-count=100
+count=500
 while(count > 0):
     count -= 1
     print(ds.DeviceStatus().to_JSON())
@@ -37,5 +37,5 @@ while(count > 0):
     print(response.headers)
     print(response.text)
 
-    time.sleep(1)
+    time.sleep(3)
     #break
