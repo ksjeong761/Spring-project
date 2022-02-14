@@ -18,8 +18,8 @@ class DeviceStatus:
         self.sensor = self.Sensor()
         self.time = self.Time()
         self.user = self.User()
-        self.process = self.Process()
-        self.win_service = self.WinService()
+        #self.process = self.Process()
+        #self.win_service = self.WinService()
     
     class Cpu:
         def __init__(self):
@@ -57,7 +57,7 @@ class DeviceStatus:
 
     class Time:
         def __init__(self):
-            self.logged_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            self.logged_time = int(round(datetime.datetime.now().timestamp()))
             self.boot_time = datetime.datetime.fromtimestamp(psutil.boot_time()).strftime('%Y-%m-%d %H:%M:%S')
 
     class User:

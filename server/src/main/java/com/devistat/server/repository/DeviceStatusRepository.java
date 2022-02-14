@@ -12,11 +12,11 @@ public class DeviceStatusRepository extends AbstractRepository<DeviceStatus>{
 	public DeviceStatusRepository(){
 		setClazz(DeviceStatus.class);
 	}
-	   
+	
     public List<DeviceStatus> findByPeriod(LocalDateTime start, LocalDateTime end){
     	return entityManager.createQuery(
     			"from " + DeviceStatus.class.toString()
-    			+ " where loggedTime >= " + start
+    			+ " where loggedTime > " + start
     			+ " and loggedTime <= " + end)
     			.getResultList();
     }

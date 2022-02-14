@@ -41,11 +41,11 @@ public class DeviceStatusController {
 	private DeviceStatusService service;
 
 	@ResponseBody
-	@GetMapping("/devices/statuses?{minuteAgo}")
+	@GetMapping("/devices/statuses?{start}&{end}")
 	public String findByPeriod(@PathVariable int minuteAgo) throws JsonProcessingException {
 		logger.info("GET 진입 확인 minuteAgo : " + minuteAgo);
 		String data = service.findByPeriod(LocalDateTime.now().minusMinutes(minuteAgo), LocalDateTime.now());
-	    
+	    logger.info("start : " + LocalDateTime.now().minusMinutes(minuteAgo) + " end : " + LocalDateTime.now());
 		logger.info("GET data : " + data);
 		return data;
 	}

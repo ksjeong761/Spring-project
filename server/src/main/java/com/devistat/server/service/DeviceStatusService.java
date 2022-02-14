@@ -23,9 +23,11 @@ public class DeviceStatusService {
 	@Autowired
 	private DeviceStatusRepository repository;
 
-	public String findByPeriod(LocalDateTime start, LocalDateTime end) {
-		repository.findByPeriod(start, end);
-		return "read";
+	public String findByPeriod(LocalDateTime start, LocalDateTime end) throws JsonProcessingException {
+		List<DeviceStatus> findResult = repository.findByPeriod(start, end);
+		ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+	    String json = mapper.writeValueAsString(findResult);
+		return json;
 	}
 	
 	public String findAll() throws JsonProcessingException {
