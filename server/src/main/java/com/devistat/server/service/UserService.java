@@ -1,7 +1,5 @@
 package com.devistat.server.service;
 
-import java.time.LocalDateTime;
-
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;

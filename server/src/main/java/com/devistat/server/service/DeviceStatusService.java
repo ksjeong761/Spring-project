@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,19 +16,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import lombok.extern.slf4j.Slf4j;
-
 @Service
 @Transactional
 public class DeviceStatusService {
+    private final Logger logger = LoggerFactory.getLogger(DeviceStatusService.class);
 	
 	@Autowired
 	private DeviceStatusRepository repository;
 
 	public String findByPeriod(LocalDateTime start, LocalDateTime end) throws JsonProcessingException {
 		List<DeviceStatus> findResult = repository.findByPeriod(start, end);
+		
 		ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 	    String json = mapper.writeValueAsString(findResult);
+	    logger.info("result json : " + json);
 		return json;
 	}
 	
@@ -39,7 +42,6 @@ public class DeviceStatusService {
 	}
 	
 	public String add(DeviceStatus deviceStatus) {
-		System.out.println("<DeviceStatusService> [add()] 진입 확인");
 		repository.create(deviceStatus);
 		return "create";
 	}

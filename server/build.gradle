@@ -40,9 +40,8 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok:1.18.12'
 	
 	//jackson
-	compile 'com.fasterxml.jackson.module:jackson-module-parameter-names:2.12.3'
-	compile 'com.fasterxml.jackson.datatype:jackson-module-parameter-names:2.12.3'
-	compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3'
+	implementation 'com.fasterxml.jackson.module:jackson-module-parameter-names:2.12.3'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3'
 }
 
 tasks.named('test') {
