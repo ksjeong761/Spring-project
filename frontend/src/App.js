@@ -11,19 +11,16 @@ const DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 const refreshDelay = 5 * 1000; //밀리초
 
-//시간 배열 길이 : 1분 ~ 1일
-//기본값 : 5분
-const timeMin = 60;
-// const timeMax = 24 * 60 * 60;
-const timeMax = 2000;
-const timeDefault = 10 * 60;
+const TIME_STORE_MIN = 60;             //메모리에 저장할 최소 시간 : 1분
+const TIME_STORE_MAX = 24 * 60 * 60;   //메모리에 저장할 최대 시간 : 1시간
+const TIME_SHOW = 10 * 60;             //화면에 표시할 시간 : 10분
 
 let lastUpdated = moment(0);
+const timeArray = Array.from({length: TIME_SHOW}, (unUsedValueForIndex, index) => index);
 
 export default function App() {
   const [chartData, setChartData] = useState(initialChartData);
   const [cpuUsageArray, setCpuUsageArray] = useState([]);
-  const [timeArray, setTimeArray] = useState(Array.from({length: timeDefault}, (unUsedValueForIndex, index) => index));
 
   //interval 등록과 삭제 반복으로 일정 시간 간격마다 동작
   useEffect(() => {
@@ -32,18 +29,15 @@ export default function App() {
       //최근 업데이트가 지정한 시간 이내에 발생했다면
       //최근 업데이트 시간을 기준으로 데이터를 가져온다.
       const endTime = moment().local();
-      const startTime = (lastUpdated > endTime.clone().subtract(timeDefault, 'seconds'))
-       ? lastUpdated 
-       : endTime.clone().subtract(timeDefault, 'seconds');
+      const startTime = (lastUpdated > endTime.clone().subtract(TIME_SHOW, 'seconds'))
+                       ? lastUpdated : endTime.clone().subtract(TIME_SHOW, 'seconds');
       lastUpdated = endTime;
-
-      console.log('interval' + '\n'
-      + ' start : ' + startTime.format(DATE_FORMAT) + '\n'
-      + ' end   : ' + endTime.format(DATE_FORMAT));
-      
       const timeLength = Math.round(moment.duration(endTime.diff(startTime)).asSeconds());
-      console.log(timeLength);
       let newArray = Array.from({length: timeLength}, () => null);
+
+      // console.log('interval timeLength : ' + timeLength + '\n'
+      // + ' start : ' + startTime.format(DATE_FORMAT) + '\n'
+      // + ' end   : ' + endTime.format(DATE_FORMAT));
 
       //API 요청 준비
       const url = 'http://localhost:8080';
@@ -62,21 +56,16 @@ export default function App() {
         if(Object.keys(response.data).length == 0){
           //시간 차이만큼 빈 배열 붙이고 리턴
           console.log("response 결과 없음");
-          setCpuUsageArray(cpuUsageArray => [...newArray, ...cpuUsageArray]);
+          setCpuUsageArray(cpuUsageArray => [...newArray, ...cpuUsageArray].slice(0, TIME_STORE_MAX));
           return;
         }
 
         //결과값 JSON 처리
         for(let i=0; i<Object.keys(response.data).length; i++){
           const time = moment(response.data[i]['loggedTime'], DATE_FORMAT);
-          const gapSecond = moment.duration(endTime.diff(time)).asSeconds();
-          const insertIndex = Math.floor(gapSecond);
+          const insertIndex =  Math.floor(moment.duration(endTime.diff(time)).asSeconds());
 
-          newArray[insertIndex] =
-            // PERCENT_MAX-
-            JSON.stringify(response.data[i]['cpu']['timePercentIdle']);
-          // responseTimes[insertIndex] =
-          //   JSON.stringify(response.data[i]['loggedTime']);
+          newArray[insertIndex] = JSON.stringify(response.data[i]['cpu']['timePercentIdle']);
           
           // console.log('기록된 시간   : ' + time.format(DATE_FORMAT) + '\n'
           //           + 'API 호출 시간 : ' + endTime.format(DATE_FORMAT));
@@ -86,7 +75,7 @@ export default function App() {
         console.log(newArray);
   
         //최대 시간을 넘어간 데이터는 메모리에 저장하지 않는다.
-        setCpuUsageArray(cpuUsageArray => [...newArray, ...cpuUsageArray]);
+        setCpuUsageArray(cpuUsageArray => [...newArray, ...cpuUsageArray].slice(0, TIME_STORE_MAX));
       });
     }, refreshDelay);
     return () => clearInterval(interval);
@@ -135,8 +124,8 @@ export default function App() {
     newData.data.labels = timeArray;
     newData.data.datasets[0].data = cpuUsageArray;
     
-    // console.log('cpuUsageArray : ' + cpuUsageArray.length);
-    // console.log('cpuUsageArray : ' + newData.data.datasets[0].data);
+    console.log('cpuUsageArray : ' + newData.data.datasets[0].data);
+    console.log('cpuUsageArray : ' + cpuUsageArray.length);
     setChartData(newData);
   }, [cpuUsageArray]);
 
@@ -161,7 +150,7 @@ const initialChartData = {
     datasets: [
       {
         label: '',
-        fill: false,
+        fill: true,
         lineTension: 0.3,
         backgroundColor: 'rgba(75,192,192,1)',
         borderColor: 'rgba(0,0,0,1)',
