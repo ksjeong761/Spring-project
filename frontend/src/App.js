@@ -19,7 +19,7 @@ let lastUpdated = moment(0);
 const timeArray = Array.from({length: TIME_SHOW}, (unUsedValueForIndex, index) => index);
 
 export default function App() {
-  const [chartData, setChartData] = useState(initialChartData);
+  const [chartData, setChartData] = useState(makeChartData([],[]));
   const [cpuUsageArray, setCpuUsageArray] = useState([]);
 
   //interval 등록과 삭제 반복으로 일정 시간 간격마다 동작
@@ -32,12 +32,14 @@ export default function App() {
       const startTime = (lastUpdated > endTime.clone().subtract(TIME_SHOW, 'seconds'))
                        ? lastUpdated : endTime.clone().subtract(TIME_SHOW, 'seconds');
       lastUpdated = endTime;
+      
       const timeLength = Math.round(moment.duration(endTime.diff(startTime)).asSeconds());
       let newArray = Array.from({length: timeLength}, () => null);
 
-      // console.log('interval timeLength : ' + timeLength + '\n'
+      // console.log('interval' + '\n'
       // + ' start : ' + startTime.format(DATE_FORMAT) + '\n'
       // + ' end   : ' + endTime.format(DATE_FORMAT));
+      // console.log(timeLength);
 
       //API 요청 준비
       const url = 'http://localhost:8080';
@@ -52,30 +54,30 @@ export default function App() {
       //API 요청 및 콜백 등록
       axios.get(url + path, axiosConfig)
       .then((response) => {
+        const responseLength = Object.keys(response.data).length;
+
         //결과가 없으면 
-        if(Object.keys(response.data).length == 0){
+        if(responseLength == 0){
           //시간 차이만큼 빈 배열 붙이고 리턴
-          console.log("response 결과 없음");
-          setCpuUsageArray(cpuUsageArray => [...newArray, ...cpuUsageArray].slice(0, TIME_STORE_MAX));
+          setCpuUsageArray((beforeCpuUsageArray) => { return [...newArray, ...beforeCpuUsageArray].slice(0, TIME_STORE_MAX) });
           return;
         }
 
-        //결과값 JSON 처리
-        for(let i=0; i<Object.keys(response.data).length; i++){
+        //결과가 있으면 JSON 처리
+        for(let i=0; i<responseLength; i++){
           const time = moment(response.data[i]['loggedTime'], DATE_FORMAT);
           const insertIndex =  Math.floor(moment.duration(endTime.diff(time)).asSeconds());
 
           newArray[insertIndex] = JSON.stringify(response.data[i]['cpu']['timePercentIdle']);
-          
+
           // console.log('기록된 시간   : ' + time.format(DATE_FORMAT) + '\n'
           //           + 'API 호출 시간 : ' + endTime.format(DATE_FORMAT));
           // console.log('시간차 : ' + gapSecond + '\n' 
           //           + '인덱스 : ' + insertIndex);
         }
-        console.log(newArray);
   
         //최대 시간을 넘어간 데이터는 메모리에 저장하지 않는다.
-        setCpuUsageArray(cpuUsageArray => [...newArray, ...cpuUsageArray].slice(0, TIME_STORE_MAX));
+        setCpuUsageArray((beforeCpuUsageArray) => { return [...newArray, ...beforeCpuUsageArray].slice(0, TIME_STORE_MAX) });
       });
     }, refreshDelay);
     return () => clearInterval(interval);
@@ -84,98 +86,61 @@ export default function App() {
   //cpu 사용량 배열을 감시하고 변화가 있다면
   //차트 데이터 전체를 최신화
   useEffect(() => {
-    const newData = {
-      data : {
-        labels: [5],
-        datasets: [
-          {
-            label: 'CPU 사용량(라인명)',
-            fill: false,
-            lineTension: 0.3,
-            backgroundColor: 'rgba(75,192,192,1)',
-            borderColor: 'rgba(0,0,0,1)',
-            borderWidth: 2,
-            data: [50.0]
-          }
-        ]
-      },
-      options : {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'top',
-          },
-          title: {
-            display: true,
-            text: 'CPU 사용량(차트명)'
-          }
-        },
-        scales: {
-          x:{
-            reverse: true,
-          },
-          y: {
-            min: 0,
-            max: 100,
-          }
-        }
-      }	
-    };
-    newData.data.labels = timeArray;
-    newData.data.datasets[0].data = cpuUsageArray;
-    
-    console.log('cpuUsageArray : ' + newData.data.datasets[0].data);
-    console.log('cpuUsageArray : ' + cpuUsageArray.length);
-    setChartData(newData);
+    console.log('detected');
+    setChartData((beforeChartData) => { 
+      return makeChartData(timeArray, cpuUsageArray);
+    });
   }, [cpuUsageArray]);
 
   return (
     <div>
       <p>lastUpdated : </p>
-    <Bar 
-      data={chartData.data}
-      options={chartData.options}
-    />
-    <Line 
-      data={chartData.data}
-      options={chartData.options}
-    />
+      <Bar 
+        data={chartData.data}
+        options={chartData.options}
+      />
+      <Line 
+        data={chartData.data}
+        options={chartData.options}
+      />
     </div>
   );
 }
 
-const initialChartData = {
-  data : {
-    labels: [],
-    datasets: [
-      {
-        label: '',
-        fill: true,
-        lineTension: 0.3,
-        backgroundColor: 'rgba(75,192,192,1)',
-        borderColor: 'rgba(0,0,0,1)',
-        borderWidth: 2,
-        data: []
-      }
-    ]
-  },
-  options : {
-    responsive: true,
-    spanGaps: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: ''
-      }
+function makeChartData(labels=[], data=[]){
+  return {
+    data : {
+      labels: labels,
+      datasets: [
+        {
+          label: '',
+          fill: false,
+          lineTension: 0.3,
+          backgroundColor: 'rgba(75,192,192,1)',
+          borderColor: 'rgba(0,0,0,1)',
+          borderWidth: 2,
+          data: data
+        }
+      ]
     },
-    scales: {
-      y: {
-        min: PERCENT_MIN,
-        max: PERCENT_MAX,
+    options : {
+      responsive: true,
+      spanGaps: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        title: {
+          display: true,
+          text: ''
+        }
+      },
+      scales: {
+        y: {
+          min: PERCENT_MIN,
+          max: PERCENT_MAX,
+        }
       }
     }
-  }	
-};
+  };
+}
