@@ -21,9 +21,11 @@ print(response.status_code)
 print(response.headers)
 print(response.text)
 
-count=3
-while(count > 0):
-    count -= 1
+delay = 5
+run_count = 1000
+
+while(run_count > 0):
+    run_count -= 1
     print(ds.DeviceStatus().to_JSON())
 
     response = requests.post(
@@ -37,5 +39,5 @@ while(count > 0):
     print(response.headers)
     print(response.text)
 
-    time.sleep(3)
+    time.sleep(delay)
     #break

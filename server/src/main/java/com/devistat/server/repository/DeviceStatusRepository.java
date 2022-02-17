@@ -30,7 +30,8 @@ public class DeviceStatusRepository extends AbstractRepository<DeviceStatus>{
 				+ "WHERE "
 					+ "ds.loggedTime > :start "
 				+ "AND "
-					+ "ds.loggedTime <= :end");
+					+ "ds.loggedTime <= :end "
+				+ "");
 
   	  query.setParameter("start", start);
   	  query.setParameter("end", end);

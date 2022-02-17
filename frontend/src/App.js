@@ -19,8 +19,15 @@ let lastUpdated = moment(0);
 const timeArray = Array.from({length: TIME_SHOW}, (unUsedValueForIndex, index) => index);
 
 export default function App() {
-  const [chartData, setChartData] = useState(makeChartData([],[]));
+  const [cpuChartData, setCpuChartData] = useState(makeChartData([],[]));
+  const [memoryChartData, setMemoryChartData] = useState(makeChartData([],[]));
+  const [diskChartData, setDiskChartData] = useState(makeChartData([],[]));
+  const [networkChartData, setNetworkChartData] = useState(makeChartData([],[]));
+
   const [cpuUsageArray, setCpuUsageArray] = useState([]);
+  const [memoryUsageArray, setMemoryUsageArray] = useState([]);
+  const [diskUsageArray, setDiskUsageArray] = useState([]);
+  const [networkUsageArray, setNetworkUsageArray] = useState([]);
 
   //interval 등록과 삭제 반복으로 일정 시간 간격마다 동작
   useEffect(() => {
@@ -34,12 +41,10 @@ export default function App() {
       lastUpdated = endTime;
       
       const timeLength = Math.round(moment.duration(endTime.diff(startTime)).asSeconds());
-      let newArray = Array.from({length: timeLength}, () => null);
-
-      // console.log('interval' + '\n'
-      // + ' start : ' + startTime.format(DATE_FORMAT) + '\n'
-      // + ' end   : ' + endTime.format(DATE_FORMAT));
-      // console.log(timeLength);
+      let newCpuArray = Array.from({length: timeLength}, () => null);
+      let newMemoryArray = Array.from({length: timeLength}, () => null);
+      let newDiskArray = Array.from({length: timeLength}, () => null);
+      let newNetworkArray = Array.from({length: timeLength}, () => null);
 
       //API 요청 준비
       const url = 'http://localhost:8080';
@@ -56,28 +61,25 @@ export default function App() {
       .then((response) => {
         const responseLength = Object.keys(response.data).length;
 
-        //결과가 없으면 
-        if(responseLength == 0){
-          //시간 차이만큼 빈 배열 붙이고 리턴
-          setCpuUsageArray((beforeCpuUsageArray) => { return [...newArray, ...beforeCpuUsageArray].slice(0, TIME_STORE_MAX) });
-          return;
-        }
-
         //결과가 있으면 JSON 처리
-        for(let i=0; i<responseLength; i++){
-          const time = moment(response.data[i]['loggedTime'], DATE_FORMAT);
-          const insertIndex =  Math.floor(moment.duration(endTime.diff(time)).asSeconds());
+        if(responseLength > 0){
+          for(let i=0; i<responseLength; i++){
+            const time = moment(response.data[i]['loggedTime'], DATE_FORMAT);
+            const insertIndex =  Math.floor(moment.duration(endTime.diff(time)).asSeconds());
+            console.log(response.data);
 
-          newArray[insertIndex] = JSON.stringify(response.data[i]['cpu']['timePercentIdle']);
-
-          // console.log('기록된 시간   : ' + time.format(DATE_FORMAT) + '\n'
-          //           + 'API 호출 시간 : ' + endTime.format(DATE_FORMAT));
-          // console.log('시간차 : ' + gapSecond + '\n' 
-          //           + '인덱스 : ' + insertIndex);
+            newCpuArray[insertIndex] = JSON.stringify(response.data[i]['cpu']['timePercentIdle']);
+            newMemoryArray[insertIndex] = JSON.stringify(response.data[i]['memory']['capacityAvailable'] / response.data[i]['memory']['capacityTotal'] * 100);
+            newDiskArray[insertIndex] = JSON.stringify(response.data[i]['disk']['readBytes']);
+            newNetworkArray[insertIndex] = JSON.stringify(response.data[i]['network']['receivedBytes']);
+          }
         }
-  
+
         //최대 시간을 넘어간 데이터는 메모리에 저장하지 않는다.
-        setCpuUsageArray((beforeCpuUsageArray) => { return [...newArray, ...beforeCpuUsageArray].slice(0, TIME_STORE_MAX) });
+        setCpuUsageArray((beforeCpuUsageArray) => { return [...newCpuArray, ...beforeCpuUsageArray].slice(0, TIME_STORE_MAX) });
+        setMemoryUsageArray((beforeMemoryUsageArray) => { return [...newMemoryArray, ...beforeMemoryUsageArray].slice(0, TIME_STORE_MAX) });
+        setDiskUsageArray((beforeDiskUsageArray) => { return [...newDiskArray, ...beforeDiskUsageArray].slice(0, TIME_STORE_MAX) });
+        setNetworkUsageArray((beforeNetworkUsageArray) => { return [...newNetworkArray, ...beforeNetworkUsageArray].slice(0, TIME_STORE_MAX) });
       });
     }, refreshDelay);
     return () => clearInterval(interval);
@@ -87,21 +89,38 @@ export default function App() {
   //차트 데이터 전체를 최신화
   useEffect(() => {
     console.log('detected');
-    setChartData((beforeChartData) => { 
+    setCpuChartData(() => { 
       return makeChartData(timeArray, cpuUsageArray);
     });
-  }, [cpuUsageArray]);
+    setMemoryChartData(() => { 
+      return makeChartData(timeArray, memoryUsageArray);
+    });
+    setDiskChartData(() => { 
+      return makeChartData(timeArray, diskUsageArray);
+    });
+    setNetworkChartData(() => { 
+      return makeChartData(timeArray, networkUsageArray);
+    });
+  }, [cpuUsageArray, memoryUsageArray, diskUsageArray, networkUsageArray]);
 
   return (
     <div>
       <p>lastUpdated : </p>
       <Bar 
-        data={chartData.data}
-        options={chartData.options}
+        data={cpuChartData.data}
+        options={cpuChartData.options}
       />
       <Line 
-        data={chartData.data}
-        options={chartData.options}
+        data={memoryChartData.data}
+        options={memoryChartData.options}
+      />
+      <Bar 
+        data={diskChartData.data}
+        options={diskChartData.options}
+      />
+      <Line 
+        data={networkChartData.data}
+        options={networkChartData.options}
       />
     </div>
   );
@@ -136,10 +155,11 @@ function makeChartData(labels=[], data=[]){
         }
       },
       scales: {
-        y: {
-          min: PERCENT_MIN,
-          max: PERCENT_MAX,
-        }
+        //데이터별 min,max 구분 필요
+        // y: {
+        //   min: PERCENT_MIN,
+        //   max: PERCENT_MAX,
+        // }
       }
     }
   };
